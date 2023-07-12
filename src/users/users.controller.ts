@@ -19,7 +19,6 @@ export class UsersController {
 
   @Post()
   create(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<any> {
-    console.log(createUserDto)
     return this.usersService.create(createUserDto);
   }
 
@@ -30,7 +29,6 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string): Promise<FindUserDto> {
-    console.log('findOne')
     return this.usersService.findOneWithoutPassword(id);
   }
 
