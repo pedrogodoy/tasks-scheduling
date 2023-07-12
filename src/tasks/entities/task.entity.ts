@@ -10,7 +10,7 @@ export class Task {
   description: string;
 
   @Column()
-  dueDate: Date;
+  dueDate: string;
 
   @ManyToOne(() => User, user => user.tasks)
   user: User;
