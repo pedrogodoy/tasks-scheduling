@@ -21,8 +21,8 @@ export class TasksService {
     return savedTask;
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  findAll(userId: string) {
+    return this.tasksRepository.find({ where: { user: { id: userId } } })
   }
 
   findOne(id: number) {
