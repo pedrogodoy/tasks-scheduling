@@ -6,6 +6,8 @@ import { UsersService } from './users.service';
 const createUserDto: CreateUserDto = {
   firstName: 'firstName #1',
   lastName: 'lastName #1',
+  username: 'pedro',
+  password: 'password',
 };
 
 describe('UsersController', () => {
@@ -23,22 +25,28 @@ describe('UsersController', () => {
             create: jest
               .fn()
               .mockImplementation((user: CreateUserDto) =>
-                Promise.resolve({ id: '1', ...user }),
+                Promise.resolve({ id: 'a9862a34-7a1a-44c2-9f8e-e77e88001cf2', ...user }),
               ),
             findAll: jest.fn().mockResolvedValue([
               {
                 firstName: 'firstName #1',
                 lastName: 'lastName #1',
+                username: 'pedro',
+                password: 'secret'
               },
               {
                 firstName: 'firstName #2',
                 lastName: 'lastName #2',
+                username: 'pedro1',
+                password: 'secret1'
               },
             ]),
             findOne: jest.fn().mockImplementation((id: string) =>
               Promise.resolve({
                 firstName: 'firstName #1',
                 lastName: 'lastName #1',
+                username: 'pedro1',
+                password: 'secret1',
                 id,
               }),
             ),
@@ -76,10 +84,10 @@ describe('UsersController', () => {
 
   describe('findOne()', () => {
     it('should find a user', () => {
-      expect(usersController.findOne(1)).resolves.toEqual({
+      expect(usersController.findOne('a9862a34-7a1a-44c2-9f8e-e77e88001cf2')).resolves.toEqual({
         firstName: 'firstName #1',
         lastName: 'lastName #1',
-        id: 1,
+        id: 'a9862a34-7a1a-44c2-9f8e-e77e88001cf2',
       });
       expect(usersService.findOne).toHaveBeenCalled();
     });
