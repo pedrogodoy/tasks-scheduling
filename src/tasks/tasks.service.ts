@@ -12,11 +12,11 @@ export class TasksService {
     private readonly tasksRepository: Repository<Task>,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto) {
+  async create(createTaskDto: CreateTaskDto, userId?: string) {
     const task = new Task();
     Object.assign(task, createTaskDto)
 
-    const savedTask = await this.tasksRepository.save(task);
+    const savedTask = await this.tasksRepository.save({ ...task, user: { id: userId } });
 
     return savedTask;
   }
