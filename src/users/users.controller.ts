@@ -29,7 +29,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<FindUserDto> {
+  findOne(@Param('id', ParseIntPipe) id: string): Promise<FindUserDto> {
     console.log('findOne')
     return this.usersService.findOneWithoutPassword(id);
   }
