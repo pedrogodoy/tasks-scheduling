@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,15 +25,17 @@ export class TasksService {
     return this.tasksRepository.find({ where: { user: { id: userId } } })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: string, userId: string) {
+    return await this.tasksRepository.findOne({ where: { id: id, user: { id: userId } }});
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
-  }
+  async remove(id: string, userId: string) {
+    const task = await this.findOne(id, userId);
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+    if (!task) {
+      throw new NotFoundException('Task not found')
+    }
+
+    await this.tasksRepository.delete({ id, user: { id: userId } });
   }
 }

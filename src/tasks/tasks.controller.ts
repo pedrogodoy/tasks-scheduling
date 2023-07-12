@@ -20,7 +20,8 @@ export class TasksController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Req() { user }, @Param('id') id: string) {
+    return this.tasksService.remove(id, user.userId);
   }
 }
