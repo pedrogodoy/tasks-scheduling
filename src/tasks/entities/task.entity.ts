@@ -9,9 +9,6 @@ export class Task {
   @Column()
   description: string;
 
-  @Column({ default: true })
-  isPending: boolean;
-
   @Column()
   dueDate: Date;
 
