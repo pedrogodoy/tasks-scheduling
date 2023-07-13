@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+</head>
+
+<body>
+
+  <form id="myForm">
+    <div>
+      <label for="login">Login</label>
+      <input id="login" name="login" type="text" />
+    </div>
+
+    <div>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" />
+    </div>
+
+    <div>
+      <button type="submit">Login</button>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+
+    function submitForm(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Get form data
+      var username = document.getElementById("login").value;
+      var password = document.getElementById("password").value;
+
+      // Create an object with the form data
+      var data = {
+        username,
+        password
+      };
+
+      // Make the POST request using Fetch API
+      fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log("Response:", result);
+          localStorage.setItem("access_token", `bearer ${result.access_token.toString()}`);
+          // Handle the response as needed
+          const eventSource = new BrowserfyEventSource('/task-notification/sse', {
+            headers: {
+              'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
+            }
+          });
+
+          eventSource.onmessage = ({ data }) => {
+            const message = document.createElement('li');
+            message.innerText = 'New message: ' + data;
+            document.body.appendChild(message);
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          // Handle any errors that occurred during the request
+        });
+    }
+
+
+
+    document.getElementById("myForm").addEventListener("submit", submitForm);
+  </script>
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/eventsource-polyfill/0.9.6/eventsource.js"
+    integrity="sha512-5u7AZWLl5+D87Z4b8n7lgV+aMaIZxAnR1+zE9iGk7h3gecBIVR08HRCZxpQuyJTS+TG7vaC0mj7l7ArmHQmE3g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>

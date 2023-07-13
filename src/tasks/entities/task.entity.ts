@@ -9,8 +9,11 @@ export class Task {
   @Column()
   description: string;
 
-  @Column()
-  dueDate: string;
+  @Column({ type: 'date' })
+  dueDate: Date | string;
+
+  @Column({ default: true })
+  sendNotification: boolean;
 
   @ManyToOne(() => User, user => user.tasks)
   user: User;

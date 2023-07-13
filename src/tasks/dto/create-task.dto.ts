@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsString, Length } from "class-validator";
+import { IsDateString, IsString, Length } from "class-validator";
 
 export class CreateTaskDto {
   @IsString()
@@ -6,5 +6,5 @@ export class CreateTaskDto {
   description: string;
   
   @IsDateString()
-  dueDate: Date | string;
+  dueDate: Date;
 }
