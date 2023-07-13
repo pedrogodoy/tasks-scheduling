@@ -13,6 +13,7 @@ import { TasksService } from '../tasks/tasks.service';
 import { Task } from '../tasks/entities/task.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
+import { NotFoundException } from '@nestjs/common';
 
 jest.useFakeTimers();
 
@@ -49,79 +50,68 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   })
 
-  // afterEach(async () => {
-  //   await sleep(2000);
-  // });
 
   it('should be defined', () => {
     expect(true).toBe(true)
   });
 
-  // beforeEach(async () => {
-  //   jest.useFakeTimers();
-
-  //   const moduleRef: TestingModule = await Test.createTestingModule({
-  //     imports: [
-  //       TypeOrmModule.forRoot({
-  //         type: 'sqlite',
-  //         database: './database.test.db',
-  //         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  //         synchronize: true,
-  //       }),
-  //       UsersModule,
-  //       PassportModule,
-  //       JwtModule.register({
-  //         secret: jwtConstants.secret,
-  //         signOptions: { expiresIn: '60s' },
-  //       }),
-  //     ],
-  //     providers: [AuthService, LocalStrategy, JwtStrategy],
-  //   }).compile();
-
-  //   service = moduleRef.get<AuthService>(AuthService);
-  // });
-
-  
 });
 
-// describe('validateUser', () => {
-//   let service: AuthService;
+describe('validateUser', () => {
+  let service: AuthService;
+  let userService: UsersService;
+  let module: TestingModule;
 
-//   beforeEach(async () => {
-//     jest.useFakeTimers();
+  beforeEach(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        UsersModule,
+        TypeOrmModule.forRootAsync({
+          useFactory: () => ({
+            type: 'sqlite',
+            name: (new Date().getTime() * Math.random()).toString(16),
+            database: ':memory:',
+            dropSchema: true,
+            entities: [Task, User],
+            synchronize: true,
+          }),
+        }),
+        TypeOrmModule.forFeature([Task, User]),
+        PassportModule,
+        JwtModule.register({
+          secret: jwtConstants.secret,
+          signOptions: { expiresIn: '60s' },
+        }),
+      ],
+      providers: [AuthService, LocalStrategy, JwtStrategy, TasksService, UsersService],
+    }).compile();
 
-//     const moduleRef: TestingModule = await Test.createTestingModule({
-//       imports: [
-//         TypeOrmModule.forRoot({
-//           type: 'sqlite',
-//           database: './database.test.db',
-//           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-//           synchronize: true,
-//         }),
-//         AuthModule,
-//         UsersModule,
-//         PassportModule,
-//         JwtModule.register({
-//           secret: jwtConstants.secret,
-//           signOptions: { expiresIn: '60s' },
-//         }),
-//       ],
-//       providers: [AuthService, LocalStrategy, JwtStrategy],
-//     }).compile();
+    service = module.get<AuthService>(AuthService);
+    userService = module.get<UsersService>(UsersService);
+  })
 
-//     service = moduleRef.get<AuthService>(AuthService);
-//   });
+  it('should return a user object when credentials are valid', async () => {
+    await userService.create({
+      firstName: 'vick',
+      lastName: 'Godoy',
+      username: 'pedro',
+      password: '123'
+    })
 
-//   it('should return a user object when credentials are valid', async () => {
-//     const res = await service.validateUser('maria', 'guess');
-//     expect(res.userId).toEqual(3);
-//   });
+    const res = await service.validateUser('pedro', '123');
+    expect(res).toHaveProperty('username', 'pedro');
+  });
 
-//   it('should return null when credentials are invalid', async () => {
-//     const res = await service.validateUser('xxx', 'xxx');
-//     expect(res).toBeNull();
-//   });
-// });
+  it('should return an error when credentials are invalid', async () => {
+    try {
+      await service.validateUser('xxx', 'xxx')
+    } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error).toHaveProperty('message', 'User not found');
+    }
+
+  });
+});
 
 // describe('validateLogin', () => {
 //   let service: AuthService;
