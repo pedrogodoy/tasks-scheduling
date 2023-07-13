@@ -31,10 +31,6 @@ describe('TasksController', () => {
     controller = module.get<TasksController>(TasksController);
   });
 
-  // afterEach(async () => {
-  //   await module.close();
-  // });
-
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });

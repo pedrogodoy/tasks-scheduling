@@ -6,5 +6,5 @@ export class CreateTaskDto {
   description: string;
   
   @IsDateString()
-  dueDate: Date;
+  dueDate: Date | string;
 }
