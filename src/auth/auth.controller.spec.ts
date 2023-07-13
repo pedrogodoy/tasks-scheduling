@@ -97,16 +97,12 @@ describe('AuthController', () => {
     });
   });
 
-  // describe('profile()', () => {
-  //   it('should return the current user', async () => {
-  //     const userLogin = { user: { username: 'pedro', password: 'secret' } };
+  describe('profile()', () => {
+    it('should return the current user', async () => {
+      const userLogin = { user: { username: 'pedro1111', password: '123' } };
 
-  //     const res = await authController.login(userLogin);
-
-      
-  //     expect(res.access_token).toBeDefined();
-  //   });
-  // });
-
- 
+      const res = await authController.getProfile(userLogin);
+      expect(res.username).toBeDefined();
+    });
+  });
 });
