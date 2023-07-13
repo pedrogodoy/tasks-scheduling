@@ -12,7 +12,7 @@ export class TaskNotificationService {
   ) {}
 
   async sendNotifications(task: Task){
-    // Put the notification strategy according to the client configuration (push notifications, websocket, etc)
+    // Put the notification strategy according to the client configuration (push notifications, websocket, e-mail, sms, etc)
     this.logger.debug(`Notification sent to user ${task.user.id}`);
     await this.taskService.updateNotification(task.id);
   }
