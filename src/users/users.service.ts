@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
