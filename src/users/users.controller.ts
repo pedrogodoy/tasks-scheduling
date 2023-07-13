@@ -32,6 +32,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: 204, description: 'Created', type: FindUserDto })
   @ApiResponse({
+    status: 400,
+    description: 'Validation Error',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User already exists',
+  })
+  @ApiResponse({
     status: 500,
     description: 'Internal Server Error',
   })
