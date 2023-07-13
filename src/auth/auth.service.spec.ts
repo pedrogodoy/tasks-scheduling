@@ -113,35 +113,39 @@ describe('validateUser', () => {
   });
 });
 
-// describe('validateLogin', () => {
-//   let service: AuthService;
+describe('validateLogin', () => {
+  let service: AuthService;
+  let module: TestingModule;
 
-//   beforeEach(async () => {
-//     jest.useFakeTimers();
-//     const moduleRef: TestingModule = await Test.createTestingModule({
-//       imports: [
-//         TypeOrmModule.forRoot({
-//           type: 'sqlite',
-//           database: './database.test.db',
-//           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-//           synchronize: true,
-//         }),
-//         UsersModule,
-//         PassportModule,
-//         AuthModule,
-//         JwtModule.register({
-//           secret: jwtConstants.secret,
-//           signOptions: { expiresIn: '60s' },
-//         }),
-//       ],
-//       providers: [AuthService, LocalStrategy, JwtStrategy],
-//     }).compile();
+  beforeEach(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        UsersModule,
+        TypeOrmModule.forRootAsync({
+          useFactory: () => ({
+            type: 'sqlite',
+            name: (new Date().getTime() * Math.random()).toString(16),
+            database: ':memory:',
+            dropSchema: true,
+            entities: [Task, User],
+            synchronize: true,
+          }),
+        }),
+        TypeOrmModule.forFeature([Task, User]),
+        PassportModule,
+        JwtModule.register({
+          secret: jwtConstants.secret,
+          signOptions: { expiresIn: '60s' },
+        }),
+      ],
+      providers: [AuthService, LocalStrategy, JwtStrategy, TasksService, UsersService],
+    }).compile();
 
-//     service = moduleRef.get<AuthService>(AuthService);
-//   });
+    service = module.get<AuthService>(AuthService);
+  })
 
-//   it('should return JWT object when credentials are valid', async () => {
-//     const res = await service.login({ username: 'maria', userId: 3 });
-//     expect(res.access_token).toBeDefined();
-//   });
-// });
+  it('should return JWT object when credentials are valid', async () => {
+    const res = await service.login({ username: 'maria', userId: 0 });
+    expect(res.access_token).toBeDefined();
+  });
+});
