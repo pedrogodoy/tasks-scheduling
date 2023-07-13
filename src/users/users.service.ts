@@ -52,7 +52,7 @@ export class UsersService {
     });
   }
 
-  findOneWithoutPassword(id: number): Promise<User> {
+  findOneWithoutPassword(id: string): Promise<User> {
     return this.usersRepository.findOne({
       select: {
         id: true,
@@ -64,7 +64,7 @@ export class UsersService {
     })
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: string): Promise<User> {
     return this.usersRepository.findOneBy({ id: id });
   }
 

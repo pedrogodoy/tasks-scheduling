@@ -6,6 +6,7 @@ describe('AppController', () => {
   let appController: AppController;
 
   beforeEach(async () => {
+    jest.useFakeTimers();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
@@ -13,6 +14,7 @@ describe('AppController', () => {
 
     appController = app.get<AppController>(AppController);
   });
+
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
