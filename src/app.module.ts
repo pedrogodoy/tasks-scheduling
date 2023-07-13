@@ -5,9 +5,12 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TasksModule } from './tasks/tasks.module';
+import { TaskNotificationModule } from './task-notification/task-notification.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './database.db',
@@ -16,7 +19,8 @@ import { TasksModule } from './tasks/tasks.module';
     }),
     AuthModule,
     UsersModule,
-    TasksModule
+    TasksModule,
+    TaskNotificationModule
   ],
   controllers: [AppController],
   providers: [AppService],

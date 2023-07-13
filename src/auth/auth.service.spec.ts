@@ -7,8 +7,6 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-import { AuthModule } from './auth.module';
 import { TasksService } from '../tasks/tasks.service';
 import { Task } from '../tasks/entities/task.entity';
 import { User } from '../users/user.entity';

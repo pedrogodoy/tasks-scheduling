@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class TasksService {
@@ -14,7 +13,7 @@ export class TasksService {
 
   async create(createTaskDto: CreateTaskDto, userId?: string) {
     const task = new Task();
-    Object.assign(task, createTaskDto)
+    Object.assign(task, { ...createTaskDto, dueDate: new Date(createTaskDto.dueDate).toISOString() })
 
     const savedTask = await this.tasksRepository.save({ ...task, user: { id: userId } });
 
@@ -23,6 +22,22 @@ export class TasksService {
 
   findAll(userId: string) {
     return this.tasksRepository.find({ where: { user: { id: userId } } })
+  }
+
+  async findTasksToSendNotification(): Promise<Task[]> {
+    const currentDate = new Date();
+
+    return this.tasksRepository.find({
+      where: {
+        dueDate: Like(`%${currentDate.toISOString().slice(0, 16)}%`),
+        sendNotification: true
+      },
+      relations: ['user']
+    });
+  }
+
+  async updateNotification(id: string) {
+    return await this.tasksRepository.update({ id }, { sendNotification: false });
   }
 
   async findOne(id: string, userId: string) {

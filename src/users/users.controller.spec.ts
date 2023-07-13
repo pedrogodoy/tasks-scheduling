@@ -3,10 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UsersModule } from './users.module';
-import * as request from 'supertest';
-import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository, createConnection, getConnection, getRepository } from "typeorm";
 import { Task } from '../tasks/entities/task.entity';
 
 const createUserDto: CreateUserDto = {

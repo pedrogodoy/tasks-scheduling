@@ -56,7 +56,7 @@ describe('TasksService', () => {
 
     const task = await service.create({
       description: 'task',
-      dueDate: '2022-04-13 13:00:00'
+      dueDate: new Date(),
     }, user[0].id)
 
 
@@ -70,7 +70,7 @@ describe('TasksService', () => {
 
       const task = await service.create({
         description: null,
-        dueDate: '2022-04-13 13:00:00'
+        dueDate: new Date(),
       }, user[0].id)
     } catch (err) {
       expect(err).toBeInstanceOf(Error)
