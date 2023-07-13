@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<any> {
+  async create(createUserDto: CreateUserDto): Promise<FindUserDto> {
     const saltOrRounds = 10;
     const password = createUserDto.password;
     const hash = await bcrypt.hash(password, saltOrRounds);
