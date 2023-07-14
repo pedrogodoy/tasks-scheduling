@@ -29,6 +29,9 @@ Executando a aplicação
 <br><br>
 #### Documentação da API
 A documentação da API é feita via Swagger, para verificar os endpoints disponíveis, basta acessar [http://localhost:3000/api](http://localhost:3000/api) com a api em execução.
+<br><br>
+#### Coleções para testar (opcional)
+Caso você utilize algum programa como o [Insomnia](https://insomnia.rest/download) ou [Postman](https://www.postman.com/downloads/) para testar os endpoints, você pode importar o arquivo `insomnia_export.json` com todos os endpoints do projeto para teste.
 
 <br><br>
 #### Requisitos
