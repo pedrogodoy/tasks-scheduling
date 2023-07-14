@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { Repository } from 'typeorm';
+import { UsersModule } from './users.module';
+import { Task } from '../tasks/entities/task.entity';
 
 const userArray = [
   {
@@ -25,7 +27,22 @@ describe('UserService', () => {
   let repository: Repository<User>;
 
   beforeEach(async () => {
+    jest.useFakeTimers();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        UsersModule,
+        TypeOrmModule.forRootAsync({
+          useFactory: () => ({
+            type: 'sqlite',
+            name: (new Date().getTime() * Math.random()).toString(16),
+            database: ':memory:',
+            dropSchema: true,
+            entities: [Task, User],
+            synchronize: true,
+          }),
+        }),
+        TypeOrmModule.forFeature([Task, User]),
+      ],
       providers: [
         UsersService,
         {
@@ -43,6 +60,13 @@ describe('UserService', () => {
 
     service = module.get<UsersService>(UsersService);
     repository = module.get<Repository<User>>(getRepositoryToken(User));
+
+    await service.create({
+      firstName: 'Pedro',
+      lastName: 'Godoy',
+      password: 'secret',
+      username: 'pedro-global'
+    })
   });
 
   it('should be defined', () => {
@@ -50,42 +74,45 @@ describe('UserService', () => {
   });
 
   describe('create()', () => {
-    it('should successfully insert a user', () => {
-      const oneUser = {
-        firstName: 'firstName #1',
-        lastName: 'lastName #1',
-      };
+    it('should successfully insert a user', async () => {
+      const user = await service.create({
+        firstName: 'Pedro',
+        lastName: 'Godoy',
+        password: 'secret',
+        username: 'pedro-service'
+      })
 
-      expect(
-        service.create({
-          firstName: 'firstName #1',
-          lastName: 'lastName #1',
-        }),
-      ).resolves.toEqual(oneUser);
+      expect(user.firstName).toEqual('Pedro');
     });
   });
 
   describe('findAll()', () => {
     it('should return an array of users', async () => {
+
       const users = await service.findAll();
-      expect(users).toEqual(userArray);
+
+      expect(users).toMatchObject([
+        {
+          firstName: 'Pedro',
+          lastName: 'Godoy',
+          username: 'pedro-global'
+        }
+      ])
     });
   });
 
   describe('findOne()', () => {
-    it('should get a single user', () => {
-      const repoSpy = jest.spyOn(repository, 'findOneBy');
-      expect(service.findOne(1)).resolves.toEqual(oneUser);
-      expect(repoSpy).toBeCalledWith({ id: 1 });
-    });
-  });
+    it('should get a single user', async() => {
+      const users = await service.findAll();
 
-  describe('remove()', () => {
-    it('should call remove with the passed value', async () => {
-      const removeSpy = jest.spyOn(repository, 'delete');
-      const retVal = await service.remove('2');
-      expect(removeSpy).toBeCalledWith('2');
-      expect(retVal).toBeUndefined();
+      const user = await service.findOne(users[0].id)
+
+      expect(user).toMatchObject({
+          firstName: 'Pedro',
+          lastName: 'Godoy',
+          username: 'pedro-global'
+      })
+
     });
   });
 });

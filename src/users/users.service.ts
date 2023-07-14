@@ -1,10 +1,10 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +13,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<any> {
+  async create(createUserDto: CreateUserDto): Promise<FindUserDto> {
     const saltOrRounds = 10;
     const password = createUserDto.password;
     const hash = await bcrypt.hash(password, saltOrRounds);
@@ -52,8 +52,8 @@ export class UsersService {
     });
   }
 
-  findOneWithoutPassword(id: number): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOneWithoutPassword(id: string): Promise<User> {
+    const user = await this.usersRepository.findOne({
       select: {
         id: true,
         firstName: true,
@@ -62,10 +62,22 @@ export class UsersService {
     },
       where: { id: id },
     })
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
-  findOne(id: number): Promise<User> {
-    return this.usersRepository.findOneBy({ id: id });
+  async findOne(id: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
   async findOneByLogin(username: string): Promise<User> {
@@ -79,6 +91,21 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    try {
+      const user = await this.usersRepository.findOneBy({ id: id });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+  
+      await this.usersRepository.delete(id);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err
+      } else {
+        throw new UnauthorizedException('You cannot delete a user with tasks')
+      }
+    }
+    
   }
 }
