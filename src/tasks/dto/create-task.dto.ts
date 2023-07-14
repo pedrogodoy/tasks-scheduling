@@ -8,6 +8,8 @@ export class CreateTaskDto {
   description: string;
   
   @IsDateString()
-  @ApiProperty()
+  @ApiProperty({
+    example: '2022-07-14 14:00:00'
+  })
   dueDate: Date;
 }
