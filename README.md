@@ -56,3 +56,8 @@ A documentação da API é feita via Swagger, para verificar os endpoints dispon
 
 ##### 5. Framework:
 [✔️] - Utilizar Nestjs
+
+<br><br>
+PS: A rotina de notificação faz apenas uma simulação de envio das tarefas pendentes enviando o id do usuário e a descrição da tarefa no horário. Com o serviço implementado, podemos fazer futuras implementações de acordo com o cliente (push notification, email, SMS, etc):
+
+<img width="639" alt="image" src="https://github.com/pedrogodoy/tasks-scheduling/assets/25281604/71957102-678f-4aa9-b246-6bf18f9d3835">
