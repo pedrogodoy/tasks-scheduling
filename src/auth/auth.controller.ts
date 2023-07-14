@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -16,6 +16,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Success', type: LoginResponseDto })
   @ApiResponse({ status: 400, description: 'Validation Error' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Request() req) {
